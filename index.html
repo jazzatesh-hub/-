@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#08080c">
+<title>ClipForge AI</title>
+<style>
+:root{--bg:#07070a;--card:#121218;--line:#2a2a34;--text:#f7f7fa;--muted:#9b9ba8;--p:#8057ff;--p2:#b24dff;--green:#35df8b}
+*{box-sizing:border-box}html,body{margin:0;width:100%;max-width:100%;min-height:100%;overflow-x:hidden;touch-action:pan-y;overscroll-behavior-x:none;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,Arial,sans-serif}
+body{background:radial-gradient(800px 450px at 50% -100px,#2a155d 0,#0b0910 48%,#07070a 78%)}button,input{font:inherit}
+.app{width:100%;max-width:1050px;margin:auto;padding:calc(12px + env(safe-area-inset-top)) 15px 60px}
+.top{display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;padding:9px 0;background:#07070add;backdrop-filter:blur(15px)}
+.logo{font-size:23px;font-weight:950;letter-spacing:-1px}.logo span{background:linear-gradient(90deg,#9d7cff,#ff58c0);-webkit-background-clip:text;color:transparent}
+.pill{font-size:11px;border:1px solid #3b3151;background:#171122;color:#cdbfff;padding:7px 9px;border-radius:999px}
+.hero{padding:28px 2px 18px}.hero h1{font-size:clamp(38px,9vw,62px);line-height:.94;letter-spacing:-3px;margin:0 0 13px}.hero p{color:var(--muted);max-width:690px;font-size:15px;line-height:1.45}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.full{grid-column:1/-1}
+.card{background:linear-gradient(180deg,#15151c,#101015);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 18px 55px #0006}.card h2{font-size:16px;margin:0 0 13px}
+.urlbox{display:flex;gap:8px}.url{flex:1;min-width:0;background:#0b0b10;border:1px solid #353540;color:#fff;border-radius:12px;padding:13px}
+.btn{border:0;border-radius:12px;padding:12px 15px;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--p),var(--p2));cursor:pointer}.btn.green{background:linear-gradient(135deg,#1ab96e,#38df8d);color:#04150c}.btn.secondary{background:#25252e}.btn:disabled{opacity:.45}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.urlbox{display:block}.urlbox .btn{width:100%;margin-top:8px}}
+.status{color:#bdbdc7;font-size:13px;line-height:1.45;min-height:20px;margin-top:10px}.error{color:#ff9e9e}.notice{font-size:12px;color:#aaaab5;background:#0d0d13;border-radius:11px;padding:11px;line-height:1.45;margin-top:11px}
+.scan{height:9px;background:#26262f;border-radius:99px;overflow:hidden;margin-top:13px}.scan div{height:100%;width:0;background:linear-gradient(90deg,var(--p),#ff55bd);transition:width .35s}
+.results{display:grid;gap:9px;margin-top:12px}.result{background:#0c0c11;border:1px solid #2d2d37;border-radius:14px;padding:13px;display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:center;cursor:pointer}.result.selected{border-color:#8c69ff;box-shadow:0 0 0 1px #8c69ff33}.rank{font-size:21px;font-weight:950;color:#bfaeff}.rtitle{font-weight:850}.meta{color:var(--muted);font-size:11px;margin-top:3px}.score{font-weight:950;color:#9effc5}
+.preview{background:#000;border-radius:15px;min-height:340px;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px;position:relative;overflow:hidden}.preview video{width:100%;max-height:620px;border-radius:12px;background:#000}.caption{position:absolute;left:8%;right:8%;bottom:8%;font-size:clamp(25px,7vw,48px);font-weight:1000;text-transform:uppercase;line-height:1.02;text-shadow:3px 3px #000,-3px 3px #000,3px -3px #000,-3px -3px #000;pointer-events:none}
+.small{font-size:11px;color:var(--muted);line-height:1.4}.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="logo">Clip<span>Forge</span> AI</div><div class="pill">PRIVATE TEST</div></header>
+<section class="hero"><h1>Paste a video.<br>Find the moment.</h1><p>Paste a URL for a video you are authorized to process. ClipForge analyzes speech and representative frames, ranks candidate moments, and renders the strongest Short.</p></section>
+<div class="grid">
+<section class="card full">
+<h2>① Video URL</h2>
+<div class="urlbox"><input id="url" class="url" inputmode="url" autocomplete="off" placeholder="https://www.youtube.com/watch?v=..."><button id="analyze" class="btn">✨ Analyze</button></div>
+<div id="status" class="status">Ready.</div><div class="scan"><div id="bar"></div></div>
+<div class="notice">Only process videos you own or have permission to edit. For YouTube, the server uses the URL to retrieve the source through the configured media adapter.</div>
+</section>
+<section class="card"><h2>② AI ranking</h2><div id="overall" class="result"><div class="rank">AI</div><div><div class="rtitle">Waiting</div><div class="meta">Analyze a video to rank moments.</div></div><div class="score">--</div></div><div id="results" class="results"></div></section>
+<section class="card"><h2>③ Selected moment</h2><div id="selected">Nothing selected yet.</div><p class="small">The strongest candidate is selected automatically. Tap another candidate to change it.</p></section>
+<section class="card full"><h2>④ Rendered Short</h2><div class="preview" id="preview"><div class="caption" id="captionOverlay"></div></div><div class="urlbox" style="margin-top:12px"><button id="render" class="btn green" disabled>✂️ Render 9:16 Short</button></div><a id="download" class="btn green hidden" style="display:block;text-align:center;text-decoration:none;margin-top:10px">Download finished MP4</a><p class="small">Rendering happens on the backend with FFmpeg. Nothing is uploaded by the page itself except the URL you submit.</p></section>
+</div></div>
+<script>
+const $=id=>document.getElementById(id);let selected=null,lastJob=null;
+function progress(n,msg){$('bar').style.width=n+'%';$('status').textContent=msg}
+$('analyze').onclick=async()=>{
+ const url=$('url').value.trim();if(!url){progress(0,'Paste a URL first.');return}
+ $('analyze').disabled=true;$('render').disabled=true;$('download').classList.add('hidden');$('status').classList.remove('error');progress(8,'Starting analysis…');
+ try{
+  const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({video_url:url,clip_length:8})});
+  const d=await r.json();if(!r.ok)throw Error(d.detail||'Analysis failed');
+  lastJob=d.job_id;progress(100,`Done. ${d.candidates.length} candidate moments found.`);
+  $('results').innerHTML='';d.candidates.forEach((c,i)=>{let e=document.createElement('div');e.className='result';e.innerHTML=`<div class="rank">${i+1}</div><div><div class="rtitle">${fmt(c.start)} → ${fmt(c.end)}</div><div class="meta">${esc(c.reason)}</div></div><div class="score">${c.score}</div>`;e.onclick=()=>pick(c,e);$('results').appendChild(e)});
+  pick(d.candidates[0],$('results').firstElementChild);$('render').disabled=false;
+ }catch(e){$('status').textContent=e.message;$('status').classList.add('error');$('bar').style.width='0%'}$('analyze').disabled=false;
+};
+function pick(c,el){selected=c;document.querySelectorAll('.result').forEach(x=>x.classList.remove('selected'));el?.classList.add('selected');$('selected').innerHTML=`<b>${fmt(c.start)}–${fmt(c.end)}</b><br><span class="small">${esc(c.reason)}</span><br><br><b>Caption:</b> ${esc(c.caption)}`;$('captionOverlay').textContent=c.caption||''}
+$('render').onclick=async()=>{if(!selected||!lastJob)return;$('render').disabled=true;progress(55,'Rendering 9:16 clip and captions…');try{let r=await fetch('/api/render',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({job_id:lastJob,candidate:selected})});let d=await r.json();if(!r.ok)throw Error(d.detail||'Render failed');progress(100,'Finished. Your Short is ready.');$('download').href=d.download_url;$('download').classList.remove('hidden')}catch(e){$('status').textContent=e.message;$('status').classList.add('error')}$('render').disabled=false};
+function fmt(s){s=Number(s);let m=Math.floor(s/60),sec=(s%60).toFixed(1).padStart(4,'0');return `${m}:${sec}`}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+</script>
+</body></html>

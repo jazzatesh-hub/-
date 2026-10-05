@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: clipforge
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-6-astra
+      - key: TRANSCRIBE_MODEL
+        value: gpt-4o-transcribe
+      - key: MAX_VIDEO_MB
+        value: "1200"
