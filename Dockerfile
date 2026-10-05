@@ -1,8 +1,6 @@
 FROM python:3.12-slim
 
-RUN RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg curl ca-certificates unzip \
-    && rm -rf /var/lib/apt/lists/*
+RUN 
 
 # Install Deno, the JS runtime recommended by yt-dlp
 RUN curl -fsSL https://deno.land/install.sh | sh
