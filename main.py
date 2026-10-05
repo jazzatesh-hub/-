@@ -71,8 +71,8 @@ def fetch_video(url, out):
 
         # Enable yt-dlp's EJS JavaScript challenge support.
         "--remote-components",
-        "ejs:npm",
-
+        "ejs:github",
+        
         "-f",
         "bv*+ba/b",
 
