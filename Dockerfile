@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Deno, the JavaScript runtime recommended by yt-dlp
+# Install Deno for yt-dlp's YouTube JavaScript challenges
 RUN curl -fsSL https://deno.land/install.sh | sh
 ENV PATH="/root/.deno/bin:${PATH}"
 
@@ -17,8 +17,8 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install the latest yt-dlp with its default EJS components
-RUN pip install --no-cache-dir -U "yt-dlp[default]"
+# Current yt-dlp + YouTube EJS support
+RUN pip install --no-cache-dir -U "yt-dlp[default]" "yt-dlp-ejs"
 
 COPY . .
 
